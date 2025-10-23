@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Test Pemahaman Fiqih Haid</title>
+
+<!-- Font & Tailwind -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<style>
+  body { font-family: 'Poppins', sans-serif; background:#f4f6f8; margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+  .quiz-container { width:95%; max-width:700px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.15); overflow:hidden; background:#fff; }
+  .hidden { display:none; }
+  .progress { height:10px; background:#eee; border-radius:10px; overflow:hidden; margin-bottom:20px; }
+  .progress-bar { height:100%; background: linear-gradient(90deg,#00c6ff,#0072ff); width:0%; transition:width .3s ease; }
+  .answers button { display:block; width:100%; margin:8px 0; padding:10px; border:2px solid #3498db; background:#fff; border-radius:12px; cursor:pointer; font-size:15px; transition:.25s; }
+  .answers button:hover { background:#3498db; color:#fff; }
+  .answers button.correct { background:#2ecc71; color:#fff; border-color:#2ecc71; }
+  .answers button.wrong { background:#e74c3c; color:#fff; border-color:#e74c3c; }
+  .explanation { background:#f0f8ff; border-left:4px solid #0078ff; padding:10px; border-radius:10px; margin-top:10px; font-size:14px; }
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+
+  <!-- Intro -->
+  <div id="intro" style="position:relative;text-align:center;">
+    <img src="./Foto.jpg" alt="Sampul Kuis" style="width:100%;max-width:700px;display:block;margin:auto;filter:brightness(60%);">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.78);backdrop-filter:blur(8px);padding:30px;border-radius:20px;width:84%;max-width:420px;">
+      <h1 style="font-size:22px;margin-bottom:8px;">Tes Pemahaman Fiqih Haid</h1>
+      <div class="sub" style="font-size:13px;margin-bottom:15px;"><i>Kitab Al-Ibanah wal Ifadhah</i></div>
+      <input type="text" id="name" placeholder="Nama Antum" style="width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:1.5px solid #ccc;">
+      <input type="text" id="region" placeholder="Daerah Antum" style="width:100%;padding:12px;margin-bottom:12px;border-radius:12px;border:1.5px solid #ccc;">
+      <button id="btnStart" style="background:linear-gradient(135deg,#3a7bd5,#00d2ff);color:#fff;border:none;padding:12px 24px;border-radius:12px;width:100%;">Mulai Test</button>
+    </div>
+    <footer style="position:absolute;bottom:8px;width:100%;color:#eee;font-size:13px;">© 2025 Mudzakarah 31</footer>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz" class="hidden p-5">
+    <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+    <div id="question-container"></div>
+    <div class="text-center mt-5">
+      <button id="nextBtn" class="hidden px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition transform hover:scale-105 text-sm">➡️ Lanjut</button>
+    </div>
+  </div>
+
+  <!-- Result Page -->
+  <div id="result" class="hidden min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center relative" style="background-image:url('Foto.jpg');">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70"></div>
+    <div class="relative z-10 bg-white/95 backdrop-blur-sm shadow-2xl border border-gray-200 rounded-3xl p-7 w-[360px] text-center">
+      <h1 class="text-2xl font-extrabold text-gray-900 mb-4 tracking-wide uppercase">🎖️ Hasil Nilai</h1>
+      <p class="text-gray-500 mb-5 text-xs italic">Test Pemahaman haid</p>
+
+      <div class="flex justify-center mb-6">
+        <div id="scoreCircle" class="w-24 h-24 rounded-full bg-gradient-to-tr from-yellow-400 via-orange-400 to-pink-500 flex items-center justify-center text-white text-4xl font-extrabold shadow-lg">0</div>
+      </div>
+
+      <div class="space-y-2 text-left text-gray-700 text-sm">
+        <div class="flex justify-between"><span>Nama</span><span id="resName">-</span></div>
+        <div class="flex justify-between"><span>Asal</span><span id="resRegion">-</span></div>
+      </div>
+
+      <div class="mt-4 border-t border-gray-300 pt-3">
+        <p id="resComment" class="text-gray-700 italic text-xs">“Kerja kerasmu patut diacungi jempol.”</p>
+      </div>
+
+      <div class="mt-6 flex flex-col gap-2">
+        <button id="btnRaport" class="px-6 py-2 bg-gradient-to-r from-green-600 to-teal-500 hover:from-green-700 hover:to-teal-600 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 text-sm">📊 Lihat Raport Teman-Teman</button>
+        <button id="btnBack" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 text-sm">🔁 Kembali</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Raport Teman-Teman Page -->
+  <div id="raportPage" class="hidden p-6 text-center bg-white min-h-[500px] rounded-2xl">
+    <h1 class="text-2xl font-bold mb-3">📖 Raport Teman-Teman</h1>
+    <p class="text-sm text-gray-600 mb-5">Berikut daftar nilai seluruh peserta test Fiqih Haid:</p>
+    <div id="raportList" class="text-left text-sm bg-gray-50 rounded-xl p-4 max-h-[400px] overflow-y-auto border border-gray-200"></div>
+    <button id="btnBackToResult" class="mt-5 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-500 text-white rounded-full shadow-md hover:scale-105 transition text-sm">⬅️ Kembali ke Hasil</button>
+  </div>
+
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6gb618ldT_OHffMNExPYI_bKZ4jM0TRV4wG4YZIDwKIzfyk5U9tSgBgd2N1NaB5q80A/exec";
+
+const questions = [
+  {q:"Seorang mubtada’ah melihat darah hitam berbau amis dan tidak kental selama 5 hari, kemudian darah hitam yang kental namun tidak berbau amis selama 12 hari, lalu berhenti. Maka yang dihukumi sebagai darah haid adalah…",options:["5 hari pertama","12 hari kedua","Seluruh 17 hari","1 hari pertama"],a:0,exp:"Karena jika dua darah memiliki jumlah sifat kuat yang sama, maka yang lebih dahulu keluar yang dihukumi sebagai haid."},
+  {q:"Seorang wanita melihat darah selama 3 hari, berhenti selama 12 hari, kemudian keluar darah lagi selama 3 hari. Maka darah terakhir tersebut dihukumi…",options:["Haid baru","Nifas","Salah semua","Istihadhah"],a:2,exp:"Karena darah tersebut merupakan darah rusak (fasad) yang hanya melengkapi masa suci, bukan haid baru."},
+  {q:"Seorang mutahayyirah muthlaqah mengingat bahwa ia berhenti haid setiap kali masuk waktu salat Asar. Maka ia harus bersuci dengan cara…",options:["Mandi setiap waktu salat","Berwudu setiap waktu salat","Mandi setiap kali masuk waktu Asar","Semua jawaban benar"],a:2,exp:"Karena ada kemungkinan ia suci saat masuk waktu Asar, maka wajib mandi setiap kali waktu itu tiba."},
+  {q:"Syarat agar darah lemah tidak dianggap kurang dari masa minimal suci (15 hari) hanya berlaku apabila…",options:["Darah keluar terputus-putus","Darah dengan sifat seperti darah pertama keluar lebih dari 15 hari","Warna darah berubah","Darah berhenti sebelum 10 hari"],a:1,exp:"Syarat ini berlaku bila darah dengan sifat kuat keluar lebih dari 15 hari; hal itu menunjukkan adanya perbedaan sifat yang berarti."},
+  {q:"Seorang wanita berkata: “Haidku berlangsung 15 hari, dan awal siklus haidku dimulai hari ini (menyebutkan hari tertentu), tetapi aku tidak tahu kadar siklusnya.” Maka wanita itu dihukumi sebagai…",options:["Semua jawaban salah","Mutahayyirah dzākirah lil-waqt nāsiyah lil-‘adad","Mutahayyirah dzākirah lil-qadr nāsiyah lil-waqt","Mutahayyirah muthlaqah"],a:3,exp:"Karena ia tidak mengetahui kadar (siklus) haidnya, maka pengetahuannya tentang waktu awal tidak bermanfaat, sehingga dihukumi sebagai mutahayyirah muthlaqah."},
+  {q:"Seorang mubtada’ah mengalami darah terus-menerus dengan satu sifat hingga hari ke-15. Pada hari ke-16, sifat darah berubah menjadi lebih kuat. Maka wanita tersebut harus…",options:["Segera mandi wajib","Tetap dianggap suci","Menunggu terlebih dahulu","Menganggap semuanya haid"],a:2,exp:"Ia tidak langsung mandi, karena bisa jadi termasuk wanita mumayyizah (yang mampu membedakan sifat darah)."},
+  {q:"Seorang wanita mengalami darah selama 21 hari (19 hari darah lemah dan 2 hari darah kuat), sedangkan kebiasaannya sebelumnya adalah 3 hari. Maka yang dihukumi haid adalah…",options:["3 hari pertama dan 2 hari terakhir","5 hari pertama","15 hari pertama","Seluruh 21 hari"],a:0,exp:"Yang dihukumi haid adalah 3 hari pertama dan 2 hari terakhir karena darah kuat masih dalam batas maksimal haid."},
+  {q:"Seorang wanita memiliki kebiasaan haid selama 5 hari, kemudian darah keluar lebih dari 15 hari. Ia wajib mandi ketika…",options:["Darah berhenti","Darah melewati 15 hari","Sesuai kebiasaannya (5 hari)","Saat warna darah berubah"],a:1,exp:"Karena bisa jadi kebiasaan haidnya telah berubah, maka ia wajib mandi setelah darah melewati 15 hari."},
+  {q:"Seorang wanita memiliki kebiasaan haid selama 7 hari. Ia melihat darah hitam selama 10 hari, lalu darah merah selama 10 hari, kemudian berhenti. Pada bulan ketiga ia melihat darah hitam selama 30 hari. Berapa hari haidnya pada bulan ketiga?",options:["7 hari","10 hari","1 hari 1 malam","30 hari"],a:1,exp:"Karena kebiasaan dapat diketahui dari berhentinya darah di bulan sebelumnya serta melalui tamyiz, maka dihitung 10 hari."},
+  {q:"Seorang mubtada’ah melihat darah merah selama 5 hari, kemudian darah hitam selama 5 hari, dan setelah itu darah kuning keluar terus-menerus. Maka yang dihukumi sebagai haid adalah…",options:["Merah","Hitam","Merah dan hitam","Kuning"],a:2,exp:"Karena darah kuat (hitam) ketika dijumlahkan dengan darah lemah (merah) masih berada di bawah batas maksimal masa haid."}
+];
+
+let currentQuestion=0, score=0, userName='', userRegion='', allData=[];
+
+document.getElementById('btnStart').addEventListener('click', startQuiz);
+document.getElementById('btnBack').addEventListener('click', ()=>location.reload());
+document.getElementById('btnRaport').addEventListener('click', showRaport);
+document.getElementById('btnBackToResult').addEventListener('click', ()=>{
+  document.getElementById('raportPage').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+});
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  currentQuestion++;
+  if(currentQuestion < questions.length) loadQuestion();
+  else showResult();
+});
+
+function startQuiz(){
+  userName = document.getElementById('name').value.trim();
+  userRegion = document.getElementById('region').value.trim();
+  if(!userName || !userRegion){ alert('Nama dan daerah harus diisi!'); return; }
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  loadQuestion();
+}
+
+function loadQuestion(){
+  const q = questions[currentQuestion];
+  document.getElementById('question-container').innerHTML = `
+    <div class="mb-3 font-semibold">${currentQuestion+1}. ${q.q}</div>
+    <div class="answers">${q.options.map((opt,i)=>`<button onclick="selectAnswer(${i}, this)">${opt}</button>`).join('')}</div>
+    <div class="explanation hidden" id="exp-${currentQuestion}">${q.exp}</div>
+  `;
+  document.getElementById('progress-bar').style.width = ((currentQuestion)/questions.length)*100 + '%';
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+
+window.selectAnswer = function(i, btn){
+  const q = questions[currentQuestion];
+  const btns = document.querySelectorAll('.answers button');
+  btns.forEach((b, idx) => {
+    b.disabled = true;
+    if(idx === q.a) b.classList.add('correct');
+    else if(idx === i) b.classList.add('wrong');
+  });
+  if(i === q.a) score++;
+  document.getElementById(`exp-${currentQuestion}`).classList.remove('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+async function showResult(){
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('resName').innerText = userName;
+  document.getElementById('resRegion').innerText = userRegion;
+
+  const percentage = Math.round((score/questions.length)*100);
+  const scoreEl = document.getElementById('scoreCircle');
+  let c=0; const timer=setInterval(()=>{c++;scoreEl.textContent=c;if(c>=percentage){clearInterval(timer);confetti();}},20);
+
+  let comment='';
+  if(percentage===100)comment='🌟 Antum Mumtaz! Pemahaman antum luar biasa.';
+  else if(percentage>=70)comment='✨ Nilai antum Jayyid!';
+  else if(percentage>=50)comment='📘 Nilai antum maqbul, belajar lagi ya.';
+  else comment='📖 Antum Rasib! Coba lagi.';
+  document.getElementById('resComment').innerText = comment;
+
+  // Simpan data ke Google Sheet (opsional, tetap bisa)
+  try { await fetch(SCRIPT_URL, { method:'POST', body:JSON.stringify({ name:userName, region:userRegion, score:percentage }) }); } catch{}
+
+  // Ambil data untuk raport
+  try {
+    const res = await fetch(SCRIPT_URL);
+    const data = await res.json();
+    allData = (Array.isArray(data)?data:data.participants||[]).map(r=>({name:r.name||r[0]||'-', region:r.region||r[1]||'-', score:Number(r.score||r[2]||0)})).sort((a,b)=>b.score-a.score);
+  } catch { allData=[]; }
+}
+
+function showRaport(){
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('raportPage').classList.remove('hidden');
+
+  const raportList = document.getElementById('raportList');
+
+  if(allData.length === 0){
+    raportList.innerHTML = '<p class="text-center text-red-500 italic">Tunggu sebentar data sedang diproses.</p>';
+    return;
+  }
+
+  const raportHTML = allData.map((p,i) => {
+    const isCurrentUser = p.name === userName;
+    return `
+      <div class="flex justify-between border-b border-gray-200 py-1">
+        <span>${i+1}. ${isCurrentUser ? '<b>' + p.name + '</b>' : p.name} (${p.region})</span>
+        <span class="font-semibold">${p.score}%</span>
+      </div>
+    `;
+  }).join('');
+
+  raportList.innerHTML = raportHTML;
+}
+</script>
+</body>
+</html>
